@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "It's fun to learn backend",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon sre/index.js"
   },
   "author": "Aneesh The Developer",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
 }
