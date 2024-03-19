@@ -1,23 +1,22 @@
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import DBconnect from "./src/db/db.js";
-import { app } from "./src/App.js";
+import app from "./src/App.js";
 
 dotenv.config({
-  path: "./env",
+  path: '.env',
 });
 
 DBconnect()
   .then(() => {
-    app.listen(process.env.PORT || 8000, () => {
-      console.log(`server is runing at port  : ${process.env.PORT}`);
+    
+    app.listen( process.env.PORT || 8000, () => {
+      console.log(`Server is running on port ${ process.env.PORT}`);
     });
   })
   .catch((error) => {
-    console.log(`There is some error in index.js DBconnect ${error}`);
+    console.log(`Error connecting to the database in index.js: ${error}`);
   });
-app.get("/", (req, res) => {
-  res.send("Hello, world!");
-});
 
 // import mongoose from "mongoose";
 // import dotenv from "dotenv"
