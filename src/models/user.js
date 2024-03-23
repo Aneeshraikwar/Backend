@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-import { JsonWebTokenError } from "jsonwebtoken";
-import { Jwt } from "jsonwebtoken";
+// import { JsonWebTokenError } from "jsonwebtoken";
+// import { Jwt } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 const userSchema = new Schema(
   {
@@ -11,6 +11,11 @@ const userSchema = new Schema(
         ref: "Vidio",
       },
     ],
+    fullName:{
+      type:String,
+      required:false,
+      lowercase:true,
+    },
     username: {
       type: String,
       required: true,
@@ -40,9 +45,9 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function (next) {
   if (this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 
   userSchema.methods.isPasswordCorrect = function (password) {

@@ -1,4 +1,4 @@
-import { v2 as aneesh } from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
 cloudinary.config({
@@ -11,7 +11,7 @@ cloudinary.config({
 //   { public_id: "olympic_flag" },
 //   function(error, result) {console.log(result); });
 
-const uploadCloudnary = async (localFilePath) => {
+const uploadOnCloudnary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
     const response = await cloudinary.uploader.upload(localFilePath, {
@@ -24,3 +24,4 @@ const uploadCloudnary = async (localFilePath) => {
     return null;
   }
 };
+export{uploadOnCloudnary}

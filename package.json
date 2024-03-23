@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon /src/App.js"
-  },
+     },
   "author": "Aneesh The Developer",
   "license": "ISC",
   "devDependencies": {

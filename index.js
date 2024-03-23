@@ -1,10 +1,9 @@
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import DBconnect from "./src/db/db.js";
 import app from "./src/App.js";
 
 dotenv.config({
-  path: '.env',
+  path: './.env',
 });
 
 DBconnect()
