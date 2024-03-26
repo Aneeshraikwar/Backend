@@ -1,27 +1,40 @@
-import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
+import * as dotenv from 'dotenv'
+dotenv.config();
+import {v2 as cloudinary} from 'cloudinary';
+import fs from 'fs'
+// cloudinary.config({ 
+//   cloud_name: 'dbb431z9n', 
+//   api_key:'435242718728562', 
+//   api_secret: 'dbwq7DPDm8h7z3oJaDn6_Gcd4Ns' 
+// });
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+cloudinary.config({ 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINARY_API_SECRET 
 });
-// cloudinary.uploader.upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
-//   { public_id: "olympic_flag" },
-//   function(error, result) {console.log(result); });
 
-const uploadOnCloudnary = async (localFilePath) => {
-  try {
-    if (!localFilePath) return null;
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
-    });
+const uploadOnCloudinary = async (localFilePath) => {
+    try {
+      if (!localFilePath) {return null}
+      
+        //upload the file on cloudinary
+        const response = await cloudinary.uploader.upload(localFilePath, {
+            resource_type: "auto"
+        })
+       
+        // file has been uploaded successfull
+        //console.log("file is uploaded on cloudinary ", response.url);
+        fs.unlinkSync(localFilePath)
+        return response;
 
-    console.log("The file has been uploaded succesfully", response.url);
-  } catch (error) {
-    fs.unlinkSync(localFilePath);
-    return null;
-  }
-};
-export{uploadOnCloudnary}
+    } catch (error) {
+    // remove the locally saved temporary file as the upload operation got failed
+    fs.unlinkSync(localFilePath)
+        return null;
+    }
+}
+
+
+
+export {uploadOnCloudinary}
