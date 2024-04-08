@@ -3,7 +3,7 @@ import { User } from "../models/user.js";
 import { ApiError } from "../utils/apiError.js";
 import { uploadOnCloudinary } from "../utils/cloudnary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import Jwt  from "jsonwebtoken";
+import Jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -136,18 +136,53 @@ const logOut = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logOut successFully"));
 });
 
-const refreshing = asyncHandler(async (req, res) => {
-  const incomingRefreshToken = req.cookies.refreshToken||req.body.refreshToken
+const refreshingAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
 
-  if(!incomingRefreshToken){
-    throw new ApiError(401,"incoming Refresh token not found")
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "incoming Refresh token not found");
   }
 
- const decodedRefreshToken=Jwt.verify(incomingRefreshToken,process.env.REFRESH_ACCESS_TOKEN_SECRET)
- if(!decodedRefreshToken){
-  throw new ApiError(401,'Refresh Token is not found from the data base ')
- }
+  try {
+    const decodedRefreshToken = Jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_ACCESS_TOKEN_SECRET
+    );
+    if (!decodedRefreshToken) {
+      throw new ApiError(401, "Refresh Token is not found from the data base ");
+    }
 
+    const user = await User.findById(decodedRefreshToken?._id);
+    if (!user) {
+      throw new ApiError(401, "something wrong in getting user ");
+    }
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError(401, "refresh token doesn't match ");
+    }
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+    const { AccessToken, refreshToken } = generateAccessAndRefreshToken(
+      user._id
+    );
+
+    return res
+      .status(200)
+      .cookie("accessToken", AccessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          refreshToken,
+          AccessToken,
+          "Access Token is refreshed"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401,"something went wrong",error?.message)
+  }
 });
 
-export { RegisterUser, LoginUser, logOut };
+export { RegisterUser, LoginUser, logOut,refreshingAccessToken };
