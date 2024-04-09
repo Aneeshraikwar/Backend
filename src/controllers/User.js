@@ -181,8 +181,28 @@ const refreshingAccessToken = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
-    throw new ApiError(401,"something went wrong",error?.message)
+    throw new ApiError(401, "something went wrong", error?.message);
   }
 });
 
-export { RegisterUser, LoginUser, logOut,refreshingAccessToken };
+const changePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user?._id);
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Password is not correct");
+  }
+  user.password = password;
+  await user.save({ validateBeforeSave: false });
+  return res 
+  .status(200)
+  .json(new ApiResponse(200,{},'Password Changed succesfully'))
+});
+
+export {
+  RegisterUser,
+  LoginUser,
+  logOut,
+  refreshingAccessToken,
+  changePassword,
+};
