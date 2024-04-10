@@ -194,16 +194,33 @@ const changePassword = asyncHandler(async (req, res) => {
   }
   user.password = password;
   await user.save({ validateBeforeSave: false });
-  return res 
-  .status(200)
-  .json(new ApiResponse(200,{},'Password Changed succesfully'))
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password Changed succesfully"));
 });
-const getCurrentUser=asyncHandler(async(req,res)=>{
-   return res
-   .status(200)
-   .json(200,req.user,'User fetch successfully')
-})
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res.status(200).json(200, req.user, "User fetch successfully");
+});
+const updateProfile = asyncHandler(async (req, res) => {
+  const { email, username } = req.body;
+  if (!(email || username)) {
+    throw new ApiError(401, "error in email or username");
+  }
+  const user = User.findByIdAndDelete(
+    req.user._id,
+    {
+      $set: {
+        username,
+        email: email,
+      },
+    },
+    { new: true }
+  ).select("-password");
 
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "The Acount detail updated succesfully "));
+});
 
 export {
   RegisterUser,
@@ -211,6 +228,6 @@ export {
   logOut,
   refreshingAccessToken,
   changePassword,
-  getCurrentUser
-  
+  getCurrentUser,
+  updateProfile,
 };
