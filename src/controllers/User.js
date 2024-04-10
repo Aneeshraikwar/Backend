@@ -112,7 +112,6 @@ const LoginUser = asyncHandler(async (req, res) => {
       })
     );
 });
-
 const logOut = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
@@ -135,7 +134,6 @@ const logOut = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", options)
     .json(new ApiResponse(200, {}, "User logOut successFully"));
 });
-
 const refreshingAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -184,7 +182,6 @@ const refreshingAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, "something went wrong", error?.message);
   }
 });
-
 const changePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user?._id);
@@ -221,6 +218,65 @@ const updateProfile = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "The Acount detail updated succesfully "));
 });
+const setAvatar = asyncHandler(async (req, res) => {
+  const avatarPath = req.file?.path;
+  if (!avatarPath) {
+    throw new ApiError(
+      401,
+      "not able to fatch avatar local path",
+      error?.message
+    );
+  }
+
+  const Avatar = await uploadOnCloudinary(avatarPath);
+  if (!Avatar.url) {
+    throw new ApiError(
+      401,
+      "something wrong while uploading avatar",
+      error?.message
+    );
+  }
+ const user= await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        Avatar: Avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+  return res.status(200).json(new ApiResponse(200,user,'the Avatar uploaded successfully ',))
+});
+const setCoverImg = asyncHandler(async (req, res) => {
+  const CoverImgPath = req.file?.path;
+  if (!CoverImgPath) {
+    throw new ApiError(
+      401,
+      "not able to fatch CoverImg local path",
+      error?.message
+    );
+  }
+
+  const CoverImg = await uploadOnCloudinary(CoverImgPath);
+  if (!CoverImg.url) {
+    throw new ApiError(
+      401,
+      "something wrong while uploading CoverImg",
+      error?.message
+    );
+  }
+  const user=await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        CoverImg: CoverImg.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res.status(200).json(new ApiResponse(200,user,'the CoverImg uploaded successfully ',))
+});
 
 export {
   RegisterUser,
@@ -230,4 +286,7 @@ export {
   changePassword,
   getCurrentUser,
   updateProfile,
+  setAvatar,
+  setCoverImg
+  
 };
