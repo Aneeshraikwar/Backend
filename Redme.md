@@ -2,4 +2,4 @@
 
 This project is based on javascript
 
-- [Model link](www.google.comm)
+- [Model link](www.google.com)

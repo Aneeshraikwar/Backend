@@ -7,7 +7,7 @@ export const varifyJWT = asyncHandler(async(req, _, next) => {
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
         
-        // console.log("midAuth ater token ",token);
+        console.log("midAuth ater token ",token);
         
         if (!token) {
             throw new ApiError(401, "Unauthorized request")
@@ -28,4 +28,4 @@ export const varifyJWT = asyncHandler(async(req, _, next) => {
         throw new ApiError(401, error?.message || "Invalid access token")
     }
     
-})
+}) 

@@ -52,7 +52,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
   const avatarUploadResponse = await uploadOnCloudinary(AvatarLocalPath);
 
   const avatarUrl = avatarUploadResponse.url;
-  // Upload Cover Image to Cloudinary
+  // Upload Cover Image` to Cloudinary
   const coverImgUploadResponse = await uploadOnCloudinary(CoverImageLocalPath);
   const coverImgUrl = coverImgUploadResponse.url;
   // Create User in the database
@@ -105,7 +105,7 @@ const LoginUser = asyncHandler(async (req, res) => {
     .cookie("accessToken", AccessToken, options)
     .cookie("refreshToken", RefreshToken, options)
     .json(
-      new ApiResponse(200, "User logedIn successfullu", {
+      new ApiResponse(200, "User LogedIn Successfully", {
         user: logedInUser,
         AccessToken,
         RefreshToken,
@@ -236,7 +236,7 @@ const setAvatar = asyncHandler(async (req, res) => {
       error?.message
     );
   }
- const user= await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
@@ -245,7 +245,9 @@ const setAvatar = asyncHandler(async (req, res) => {
     },
     { new: true }
   ).select("-password");
-  return res.status(200).json(new ApiResponse(200,user,'the Avatar uploaded successfully ',))
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "the Avatar uploaded successfully "));
 });
 const setCoverImg = asyncHandler(async (req, res) => {
   const CoverImgPath = req.file?.path;
@@ -265,7 +267,7 @@ const setCoverImg = asyncHandler(async (req, res) => {
       error?.message
     );
   }
-  const user=await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
@@ -275,7 +277,9 @@ const setCoverImg = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
 
-  return res.status(200).json(new ApiResponse(200,user,'the CoverImg uploaded successfully ',))
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "the CoverImg uploaded successfully "));
 });
 
 export {
@@ -287,6 +291,5 @@ export {
   getCurrentUser,
   updateProfile,
   setAvatar,
-  setCoverImg
-  
+  setCoverImg,
 };
