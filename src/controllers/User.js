@@ -141,7 +141,7 @@ const refreshingAccessToken = asyncHandler(async (req, res) => {
   if (!incomingRefreshToken) {
     throw new ApiError(401, "incoming Refresh token not found");
   }
-
+   /* -------------------- verifing cookie's refresh token ------------------- */
   try {
     const decodedRefreshToken = Jwt.verify(
       incomingRefreshToken,
@@ -150,7 +150,7 @@ const refreshingAccessToken = asyncHandler(async (req, res) => {
     if (!decodedRefreshToken) {
       throw new ApiError(401, "Refresh Token is not found from the data base ");
     }
-
+   /* ----------------------- finding the user from db ---------------------- */
     const user = await User.findById(decodedRefreshToken?._id);
     if (!user) {
       throw new ApiError(401, "something wrong in getting user ");
@@ -162,6 +162,7 @@ const refreshingAccessToken = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: true,
     };
+    /* ---------------- generating new refresh and Access Tokens ---------------- */
     const { AccessToken, refreshToken } = generateAccessAndRefreshToken(
       user._id
     );
@@ -182,14 +183,21 @@ const refreshingAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, "something went wrong", error?.message);
   }
 });
+
+     /* -------------------------------------------------------------------------- */
+     /*                       controller for change Password                       */
+     /* -------------------------------------------------------------------------- */
 const changePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
+
   const user = await User.findById(req.user?._id);
+  /* -------------------------- verifing the password ------------------------- */
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
   if (!isPasswordCorrect) {
     throw new ApiError(400, "Password is not correct");
   }
   user.password = password;
+  /* --------------------------- saving new password -------------------------- */
   await user.save({ validateBeforeSave: false });
   return res
     .status(200)
@@ -198,6 +206,9 @@ const changePassword = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res.status(200).json(200, req.user, "User fetch successfully");
 });
+/* -------------------------------------------------------------------------- */
+/*                        controller for profile update                       */
+/* -------------------------------------------------------------------------- */
 const updateProfile = asyncHandler(async (req, res) => {
   const { email, username } = req.body;
   if (!(email || username)) {
