@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "run":"App.js",
-    "dev": "nodemon "
+    "dev": "nodemon index.js"
   },
   "author": "Aneesh The Developer",
   "license": "ISC",
