@@ -87,7 +87,7 @@ const LoginUser = asyncHandler(async (req, res) => {
   const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
-    throw new ApiError(404, "Invalide credintials");
+    throw new ApiError(404, "Enter valid Password");
   }
   const { AccessToken, RefreshToken } = await generateAccessAndRefreshToken(
     user._id
@@ -189,17 +189,22 @@ const refreshingAccessToken = asyncHandler(async (req, res) => {
      /* -------------------------------------------------------------------------- */
 const changePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
-
+  
   const user = await User.findById(req.user?._id);
   /* -------------------------- verifing the password ------------------------- */
-  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
-  if (!isPasswordCorrect) {
+  if(!user){
+    console.log(user)
+    throw new ApiError(400,"user not found")
+  }
+  const correctPassword = await user.isPasswordCorrect(oldPassword);
+  if (!correctPassword) {
+    
     throw new ApiError(400, "Password is not correct");
   }
-  user.password = password;
+  user.password = newPassword;
   /* --------------------------- saving new password -------------------------- */
   await user.save({ validateBeforeSave: false });
-  return res
+  return res 
     .status(200)
     .json(new ApiResponse(200, {}, "Password Changed succesfully"));
 });
