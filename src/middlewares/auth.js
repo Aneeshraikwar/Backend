@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 
     
     if (!token) {
-      console.log("inside if token 4");
+      
       throw new ApiError(401, "Unauthorizad request || Token is not found  ");
     }
     
@@ -22,7 +22,7 @@ import jwt from "jsonwebtoken";
     );
    
     if (!user) {
-      throw new ApiError(401, "Invalide accessToken  ");
+      throw new ApiError(401, "Invalide accessToken");
     }
 
     req.user = user;
