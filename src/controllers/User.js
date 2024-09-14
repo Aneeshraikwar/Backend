@@ -4,6 +4,8 @@ import { ApiError } from "../utils/apiError.js";
 import { uploadOnCloudinary } from "../utils/cloudnary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import Jwt from "jsonwebtoken";
+import mongoose, { sanitizeFilter } from "mongoose";
+import { emit } from "nodemon";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -193,12 +195,11 @@ const changePassword = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user?._id);
   /* -------------------------- verifing the password ------------------------- */
   if (!user) {
-    console.log(user)
-    throw new ApiError(400, "user not found")
+    console.log(user);
+    throw new ApiError(400, "user not found");
   }
   const correctPassword = await user.isPasswordCorrect(oldPassword);
   if (!correctPassword) {
-
     throw new ApiError(400, "Password is not correct");
   }
   user.password = newPassword;
@@ -209,7 +210,9 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password Changed succesfully"));
 });
 const getCurrentUser = asyncHandler(async (req, res) => {
-  return res.status(200).json(new ApiResponse(200, req.user, "User fetch successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "User fetch successfully"));
 });
 /* -------------------------------------------------------------------------- */
 /*                        controller for profile update                       */
@@ -219,7 +222,7 @@ const updateProfile = asyncHandler(async (req, res) => {
   if (!email && !username) {
     throw new ApiError(401, "error in email or username");
   }
-  const user =await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
@@ -230,21 +233,24 @@ const updateProfile = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
   if (!user) {
-    throw new ApiError(400, "user not fount")
+    throw new ApiError(400, "user not fount");
   }
   return res
-  .status(200)
-  .json(new ApiResponse(200, user, "The account details were updated successfully"));
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user,
+        "The account details were updated successfully"
+      )
+    );
 });
 const setAvatar = asyncHandler(async (req, res) => {
   const avatarPath = req.file?.path;
-  console.log(avatarPath)
-  console.log(avatarPath)
+  console.log(avatarPath);
+  console.log(avatarPath);
   if (!avatarPath) {
-    throw new ApiError(
-      401,
-      "not able to fatch avatar local path",
-    );
+    throw new ApiError(401, "not able to fatch avatar local path");
   }
 
   const Avatar = await uploadOnCloudinary(avatarPath);
@@ -300,6 +306,118 @@ const setCoverImg = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, " CoverImg uploaded successfully "));
 });
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+  if (!username?.trim()) {
+    throw new ApiError(400, "Invalid user");
+  }
+  // const user=await User.find({
+  //        username
+  //   })
+  const channel = await User.aggregate([
+    {
+      $match: {
+        username: username?.toLowerCase(),
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_d",
+        foreignField: "channels",
+        as: "subscribers",
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_d",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+    {
+      $addFields: {
+        subscribersCount: {
+          $size: "$subscribers",
+        },
+        SubscribedToCount: {
+          $size: "subscribedTo",
+        },
+        isSubscribed: {
+          $cond: {
+            if: { $in: [req.user._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        username: 1,
+        email: 1,
+        subscribersCount: 1,
+        SubscribedToCount: 1,
+        isSubscribed: 1,
+        Avatar: 1,
+        CoverImg: 1,
+      },
+    },
+  ]);
+
+  if (!channel?.length) {
+    throw new ApiError(500, "channel does not exist  ");
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        channel[0],
+        "The channel has been successfully fatched"
+      )
+    );
+});
+const getWatchHistory = asyncHandler(async (req, res) => {
+  const user = User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "vidio",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          {
+            $lookup: {
+              from: "user",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    username: 1,
+                    email: 1,
+                    Avatar: 1,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user[0], "Watch History factched successfully"));
+});
 
 export {
   RegisterUser,
@@ -311,4 +429,6 @@ export {
   updateProfile,
   setAvatar,
   setCoverImg,
+  getUserChannelProfile,
+  getWatchHistory,
 };
