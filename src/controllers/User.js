@@ -5,8 +5,6 @@ import { uploadOnCloudinary } from "../utils/cloudnary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import Jwt from "jsonwebtoken";
 import mongoose, { sanitizeFilter } from "mongoose";
-import { emit } from "nodemon";
-
 const generateAccessAndRefreshToken = async (userId) => {
   try {
     const foundUser = await User.findById(userId);
@@ -118,8 +116,9 @@ const logOut = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: {
-        refreshToken: undefined,
+      $unset: {
+        refreshToken: 1,
+        // this would be better aproach
       },
     },
     {

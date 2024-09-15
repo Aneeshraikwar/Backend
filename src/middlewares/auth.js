@@ -29,7 +29,7 @@ import jwt from "jsonwebtoken";
     next();
   } catch (error) {
     // console.error(error);
-    throw new ApiError(401, "something went wrong ", error);
+    throw new ApiError(401, "Your are not loged ,In please logIn ", error);
   }
 });
 
