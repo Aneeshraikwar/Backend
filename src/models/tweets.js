@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const likeSchema = new Schema(
+const tweetSchema = new Schema(
  {
 
     comment:{
@@ -23,5 +23,5 @@ const likeSchema = new Schema(
  },
   { timestamps: true }
 );
-likeSchema.plugin(mongooseAggregatePaginate);
-export const like = mongoose.model("Like", likeSchema);
+TweetSchema.plugin(mongooseAggregatePaginate);
+export const Tweet = mongoose.model("Tweet", tweetSchema);

@@ -5,13 +5,14 @@ const subsCriptionSchema = new Schema(
   {
     subscriber: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     channel: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
   },
   {timestamps:true}
+  
 );
 export const Subscribtion=mongoose.model("subscription",subsCriptionSchema)
