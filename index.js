@@ -5,14 +5,7 @@ import app from "./src/App.js";
 dotenv.config({
   path: '.env',
 });
-app.get('/', (req, res) => {
-  res.send('Hello Aneesh!')
-})
 
-
-app.listen( process.env.PORT || 8000, () => {
-  console.log(`Server is running on port ${ process.env.PORT}`);
-});
  
 DBconnect()
   .then(() => {
