@@ -8,14 +8,6 @@ app.use(
     credentials: true,
   })
 );
-app.get('/', (req, res) => {
-  res.send('Hello Aneesh!')
-})
-
-
-app.listen( process.env.PORT || 8000, () => {
-  console.log(`Server is running on port ${ process.env.PORT}`);
-});
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ limit: "16kb", extended: true }));
 app.use(express.static("public"));

@@ -6,10 +6,10 @@ dotenv.config({
   path: '.env',
 });
 
- 
-DBconnect()
-  .then(() => {
-      console.log("hellow")
+DBconnect().then(() => {
+    app.listen( process.env.PORT || 8000, () => {
+      console.log(`Server is running on port ${ process.env.PORT}`);
+    });
   })
   .catch((error) => {
     console.log(`Error connecting to the database in index.js: ${error}`);
