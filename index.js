@@ -8,17 +8,15 @@ dotenv.config({
 app.get('/', (req, res) => {
   res.send('Hello Aneesh!')
 })
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
 
+
+app.listen( process.env.PORT || 8000, () => {
+  console.log(`Server is running on port ${ process.env.PORT}`);
+});
  
 DBconnect()
   .then(() => {
-    
-    app.listen( process.env.PORT || 8000, () => {
-      console.log(`Server is running on port ${ process.env.PORT}`);
-    });
+      console.log("hellow")
   })
   .catch((error) => {
     console.log(`Error connecting to the database in index.js: ${error}`);
