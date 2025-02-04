@@ -8,6 +8,9 @@ dotenv.config({
 app.get('/', (req, res) => {
   res.send('Hello Aneesh!')
 })
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
 
  
 DBconnect()
