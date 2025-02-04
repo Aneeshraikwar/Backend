@@ -5,6 +5,10 @@ import app from "./src/App.js";
 dotenv.config({
   path: '.env',
 });
+app.get('/', (req, res) => {
+  res.send('Hello Aneesh!')
+})
+
  
 DBconnect()
   .then(() => {
