@@ -5,8 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "run":"App.js"
-    
+  "dev":"nodemon index.js" 
   },
   "author": "Aneesh The Developer",
   "license": "ISC",

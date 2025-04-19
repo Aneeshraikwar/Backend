@@ -119,3 +119,18 @@ dist
 .pnp.*
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
+
+
+# Ignore node_modules
+node_modules/
+
+# Ignore environment files
+.env
+.env.local
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore system files
+Thumbs.db
+.DS_Store
