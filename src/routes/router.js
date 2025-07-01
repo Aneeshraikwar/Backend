@@ -13,7 +13,7 @@ import {
   setCoverImg,
   updateProfile,
 } from "../controllers/User.js";
-import { varifyJWT } from "../middlewares/Auth.js";
+import { varifyJWT } from "../middlewares/auth.js";
 const router = Router();
 /* --------------------------- RegisterUser route --------------------------- */
 
