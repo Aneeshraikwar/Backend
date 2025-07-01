@@ -20,7 +20,7 @@ import jwt from "jsonwebtoken";
     const user = await User.findById(decodedToken?._id).select(
       "-password -accesToken"
     );
-   
+    
     if (!user) {
       throw new ApiError(401, "Invalide accessToken");
     }
