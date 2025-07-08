@@ -72,13 +72,13 @@ const RegisterUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User registered successfully", user });
 });
 const LoginUser = asyncHandler(async (req, res) => {
-  const { email, username, password } = req.body;
+  const { identifier , password } = req.body;
   
-  if (!(email || username)) {
+  if (!(identifier )) {
     throw new ApiError(400, "Incorrect Username or Email");
   }
   const user = await User.findOne({
-    $or: [{ email }, { username }],
+    $or: [{ email:identifier }, { username:identifier }],
   });
   if (!user) {  
     throw new ApiError(404, "User not found");
